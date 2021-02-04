@@ -36,13 +36,25 @@
 
               <hr>
 
-              <div class="mb-2">
+              <div class="mb-2" v-if="comments.length > 0">
                 {{ comments.length }} comments for this post.
               </div>
+              <div v-else>
+                <small>No comments for this post.</small>
+              </div>
+
+              <hr>
+
+              <div v-for="(comment, index) in comments">
+                {{ comment }} <a href="#" v-on:click="deleteComment(index)">Delete</a>
+              </div>
+
+              <hr>
+
 
               <div class="form-group">
                 <label for="comment">Add comment</label>
-                <input type="text" class="form-control">
+                <input type="text" class="form-control" v-model="newComment">
               </div>
 
               <button class="btn btn-primary mt-2" v-on:click="addNewComment">Add comment</button>
@@ -62,8 +74,9 @@
         data: {
           postBody: '',
           likes: 20,
-          comments: [],
-          userHasLikedThePost: false
+          comments: ["First comment."],
+          userHasLikedThePost: false,
+          newComment: '',
         },
 
         methods: {
@@ -78,7 +91,12 @@
           },
 
           addNewComment() {
-            // display the comment
+            this.comments.push(this.newComment);
+            this.newComment = '';
+          },
+
+          deleteComment(index) {
+            this.comments.splice(index, 1);
           }
         }
       })
