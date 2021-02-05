@@ -14,30 +14,30 @@
     <div class="container my-5" id="app">
       <div class="row">
         <div class="col-md-4 mx-auto">
-          <div class="card shadow">
+          <div class="card shadow mb-4" v-for="(post, index) in posts">
             <div class="card-header">
-              <h4 class="mb-0">Ravi Teja</h4>
-              <small>Posted 2 days ago.</small>
+              <h4 class="mb-0">{{ post.name.toUpperCase() }}</h4>
+              <small>{{ formattedDate(post.addedOn) }}</small>
             </div>
             <div class="card-body">
-              <p class="card-text">Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsum id incidunt optio eveniet ullam natus iste debitis reprehenderit, fugit voluptatum. Nam reiciendis repudiandae inventore nulla vel mollitia, incidunt id deleniti?</p>
+              <p class="card-text">{{ post.body }}</p>
 
               <hr>
 
-              <p>{{ likes }} likes</p> 
+              <p>{{ post.likesCount }} likes</p> 
 
-              <div v-if="userHasLikedThePost == true">
-                <button class="btn btn-sm btn-dark" v-on:click="decrementLikes">Dislike</button>
+              <div v-if="post.userHasLikedThePost == true">
+                <button class="btn btn-sm btn-dark" v-on:click="decrementLikes(index)">Dislike</button>
               </div>
 
-              <div v-if="userHasLikedThePost == false">
-                <button class="btn btn-sm btn-primary" v-on:click="incrementLikes">Like</button>
+              <div v-if="post.userHasLikedThePost == false">
+                <button class="btn btn-sm btn-primary" v-on:click="incrementLikes(index)">Like</button>
               </div>
 
               <hr>
 
               <div class="mb-2" v-if="comments.length > 0">
-                {{ comments.length }} comments for this post.
+                {{ post.comments.length }} comments for this post.
               </div>
               <div v-else>
                 <small>No comments for this post.</small>
@@ -45,8 +45,8 @@
 
               <hr>
 
-              <div v-for="(comment, index) in comments">
-                {{ comment }} <a href="#" v-on:click="deleteComment(index)">Delete</a>
+              <div v-for="comment in post.comments">
+                {{ comment }} 
               </div>
 
               <hr>
@@ -54,10 +54,10 @@
 
               <div class="form-group">
                 <label for="comment">Add comment</label>
-                <input type="text" class="form-control" v-model="newComment">
+                <input type="text" class="form-control" id="#comment-index" v-model="newComment">
               </div>
 
-              <button class="btn btn-primary mt-2" v-on:click="addNewComment">Add comment</button>
+              <button class="btn btn-primary mt-2" v-on:click="addNewComment(index)">Add comment</button>
               
             </div>
           </div>
@@ -77,26 +77,56 @@
           comments: ["First comment."],
           userHasLikedThePost: false,
           newComment: '',
+          posts: [
+            {
+              "name": "Ravi Teja",
+              "addedOn": "2021-02-02",
+              "body": "Some title",
+              "likesCount": "20",
+              "userHasLikedThePost": true,
+              "comments": []
+            },
+            {
+              "name": "Venkatesh",
+              "addedOn": "2021-02-02",
+              "body": "Some New title",
+              "likesCount": "20",
+              "userHasLikedThePost": true,
+              "comments": [
+                "first comment"
+              ]
+            },
+          ]
         },
 
         methods: {
-          incrementLikes() {
-            this.likes = this.likes + 1;
-            this.userHasLikedThePost = true;
+          incrementLikes(index) {
+            let post = this.posts[index];
+            post["likesCount"] = post["likesCount"] + 1;
+            post["userHasLikedThePost"] = true;
           },
 
-          decrementLikes() {
-            this.likes = this.likes - 1;
-            this.userHasLikedThePost = false;
+          decrementLikes(index) {
+            let post = this.posts[index];
+            post["likesCount"] = post["likesCount"] - 1;
+            post["userHasLikedThePost"] = false;
           },
 
-          addNewComment() {
-            this.comments.push(this.newComment);
-            this.newComment = '';
+          addNewComment(index) {
+            let post = this.posts[index];
+            post["comments"].push(this.newComment);
+
+
+
+            // this.newComment = '';
           },
 
           deleteComment(index) {
             this.comments.splice(index, 1);
+          },
+
+          formattedDate(postDate) {
+            return 'Fomatted date: ' + postDate;
           }
         }
       })
