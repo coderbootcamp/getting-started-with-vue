@@ -13,6 +13,12 @@
   <body class="bg-light">
     <div class="container my-5" id="app">
       <div class="row">
+        <div class="col-sm-12 col-md-6 mx-auto" v-for="post in posts">
+          <post-card v-bind:user-post="post"></post-card>
+        </div>
+      </div>
+
+      <!-- <div class="row">
         <div class="col-md-4 mx-auto">
           <div class="card shadow mb-4" v-for="(post, index) in posts">
             <div class="card-header">
@@ -62,12 +68,87 @@
             </div>
           </div>
         </div>
-      </div>
+      </div> -->
     </div>
 
     <!-- Vue -->
     <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
     <script>
+      Vue.component('post-card', {
+        template: `
+          <div class="card mb-4">
+            <div class="card-header">
+              <h4 class="mb-0">{{ userPost.name.toUpperCase() }}</h4>
+              <small>{{ userPost.addedOn }}</small>
+            </div>
+            <div class="card-body">
+              <p class="card-text">{{ userPost.body }}</p>
+
+              <hr>
+
+              <p>{{ userPost.likesCount }} likes</p> 
+
+              <div v-if="userPost.userHasLikedThePost == true">
+                <button class="btn btn-sm btn-dark" v-on:click="decrementLikes()">Dislike</button>
+              </div>
+
+              <div v-if="userPost.userHasLikedThePost == false">
+                <button class="btn btn-sm btn-primary" v-on:click="incrementLikes()">Like</button>
+              </div>
+
+              <hr>
+
+              {{ userPost.comments.length }} comments
+
+              <div v-if="userPost.comments.length > 0">
+                <div v-for="comment in userPost.comments">
+                  {{ comment }}
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="comment">Add comment</label>
+                <input type="text" class="form-control" id="#comment-index" v-model="newComment">
+              </div>
+
+              <button class="btn btn-primary mt-2" v-on:click="addNewComment()">Add comment</button>
+              
+            </div>
+          </div>
+        `,
+        props: ["userPost"],
+        data() {
+          return {
+            newComment: ""
+          }
+        },
+        methods: {
+          incrementLikes() {
+            this.userPost.likesCount = this.userPost.likesCount + 1;
+            this.userPost.userHasLikedThePost = true;
+          },
+
+          decrementLikes() {
+            this.userPost.likesCount = this.userPost.likesCount - 1;
+            this.userPost.userHasLikedThePost = false;
+          },
+
+          addNewComment() {
+            console.log(this.newComment);
+            this.userPost["comments"].push(this.newComment);
+            this.newComment = '';
+          },
+
+          deleteComment(index) {
+            this.comments.splice(index, 1);
+          },
+
+          formattedDate(postDate) {
+            return 'Fomatted date: ' + postDate;
+          }
+        }
+      });
+
       var app = new Vue({
         el: '#app',
 
@@ -98,34 +179,6 @@
             },
           ]
         },
-
-        methods: {
-          incrementLikes(index) {
-            let post = this.posts[index];
-            post["likesCount"] = post["likesCount"] + 1;
-            post["userHasLikedThePost"] = true;
-          },
-
-          decrementLikes(index) {
-            let post = this.posts[index];
-            post["likesCount"] = post["likesCount"] - 1;
-            post["userHasLikedThePost"] = false;
-          },
-
-          addNewComment(index) {
-            let post = this.posts[index];
-            post["comments"].push(this.newComment);
-            // this.newComment = '';
-          },
-
-          deleteComment(index) {
-            this.comments.splice(index, 1);
-          },
-
-          formattedDate(postDate) {
-            return 'Fomatted date: ' + postDate;
-          }
-        }
       })
     </script>
   </body>
